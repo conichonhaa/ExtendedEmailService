@@ -2,28 +2,30 @@
 
 declare(strict_types=1);
 
-namespace Conichonhaa\Webtrees\Module\ExtendedEmailService;
-
 use Fisharebest\Webtrees\Module\AbstractModule;
 use Fisharebest\Webtrees\Module\ModuleCustomInterface;
 use Fisharebest\Webtrees\Module\ModuleCustomTrait;
 use Fisharebest\Webtrees\Services\EmailService;
 
-
-	// extend EmailService class
-
-class ExtendedEmailService extends EmailService implements ModuleCustomInterface {
-	
-	use ModuleCustomTrait;
-    protected function transport(): Swift_Transport
-    {
+// Create a modified version of EmailService
+class MyEmailService extends EmailService {
+    function transport() {
         $transport = parent::transport();
         $transport->setStreamOptions(array('ssl' => array('allow_self_signed' => true, 'verify_peer' => false)));
 
-        return $transport;
+        return $transport;    }
+}
+
+// Create a custom module
+class MyClass extends AbstractModule implements ModuleCustomInterface {
+    use ModuleCustomTrait;
+
+    public function boot(): void {
+        app()->bind(EmailService::class, MyEmailService::class);
     }
-    
-    /**
+
+    // The other module functions go here (name, title, description, author, version, etc.).
+/**
      * How should this module be labelled on tabs, menus, etc.?
      *
      * @return string
@@ -43,13 +45,11 @@ class ExtendedEmailService extends EmailService implements ModuleCustomInterface
         return 'This module disable EmailService SSL check';
     }
 	
-	public function boot(): void
-	{
-		app()->bind(EmailService::class, ExtendedEmailService::class);
-	}	
-	
-};
+	public function customModuleAuthorName(): string
+    {
+        return 'Conichonhaa';
+    }
+}
 
-
-
-
+// Create and return a module object.
+return new MyClass();
