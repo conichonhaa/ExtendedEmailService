@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+
 use Fisharebest\Webtrees\Module\AbstractModule;
 use Fisharebest\Webtrees\Module\ModuleCustomInterface;
 use Fisharebest\Webtrees\Module\ModuleCustomTrait;
@@ -9,7 +10,7 @@ use Fisharebest\Webtrees\Services\EmailService;
 
 // Create a modified version of EmailService
 class MyEmailService extends EmailService {
-    function transport() {
+    protected function transport(): Swift_Transport {
         $transport = parent::transport();
         $transport->setStreamOptions(array('ssl' => array('allow_self_signed' => true, 'verify_peer' => false)));
 
